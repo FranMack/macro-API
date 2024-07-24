@@ -27,7 +27,7 @@ export class EmailService {
 
     try {
       const sentInformation = await transporter.sendMail({
-        from: `Nutriendo la vida <${envs.MAILER_EMAIL}>`,
+        from: `Banco Macro <${envs.MAILER_EMAIL}>`,
         to: to,
         subject: subject,
         html: htmlBody,

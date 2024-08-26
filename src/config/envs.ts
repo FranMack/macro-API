@@ -8,7 +8,8 @@ export const envs={
     MAILER_SERVICE:process.env.MAILER_SERVICE!,
     MAILER_EMAIL:process.env.MAILER_EMAIL!,
     MAILER_SECRET_KEY:process.env.MAILER_SECRET_KEY!,
-    API_DOMAIN:process.env.API_DOMAIN!
+    API_DOMAIN:process.env.API_DOMAIN!,
+    FRONT_URL:process.env.FRONT_URL!,
 
 }
 

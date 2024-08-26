@@ -5,11 +5,12 @@ export class RegisterUserDto {
     readonly name: string,
     readonly lastname: string,
     readonly email: string,
+    readonly username: string,
     readonly password: string
   ) {}
 
   static create(object: { [key: string]: string }): [string?, RegisterUserDto?] {
-    const { name, lastname, email, password } = object;
+    const { name, lastname, email, password,username } = object;
 
     // Validaciones del nombre
     if (!name) {
@@ -35,6 +36,13 @@ export class RegisterUserDto {
     if (!regularExps.email.test(email)) {
       return ["El correo electrónico no es válido", undefined];
     }
+
+    
+    // Validaciones del usenamee
+    if (!username) {
+      return ["Falta el nombre de usuario", undefined];
+    }
+   
 
     // Validaciones de la contraseña
     if (!password) {
@@ -65,6 +73,6 @@ export class RegisterUserDto {
       return ["La contraseña es demasiado corta", undefined];
     }
 
-    return [undefined, new RegisterUserDto(name,lastname, email, password)];
+    return [undefined, new RegisterUserDto(name,lastname, email,username, password)];
   }
 }

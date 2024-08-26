@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthServices } from "../services/auth.services";
 import { LoginUserDto, RegisterUserDto } from "../../domain/dto";
 import { CustomError } from "../../domain/errors/custom.errors";
-import { UserModel } from "../../data/Mongo/Models/user.models";
+
 
 export class AutControllers {
 
@@ -32,6 +32,7 @@ export class AutControllers {
  
   }
 
+ 
   static async register(req: Request, res: Response) {
     try {
       const [error, userRegisterDto] = RegisterUserDto.create(req.body);
@@ -54,27 +55,6 @@ export class AutControllers {
     }
   }
 
-  static async me(req: Request, res: Response){
-
-    const{user}=req.body
-    try{
-
-      res.status(200).json(user)
-
-
-    }
-
-    catch (error) {
-      if (error instanceof CustomError) {
-        return res.status(error.statusCode).json({ error: error.message });
-      }
-      if (error instanceof Error) {
-        return res.status(500).json({ error: error.message });
-      }
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  } 
-
   static async validateUser(req: Request, res: Response){
     const {token}=req.params
     try{
@@ -96,10 +76,13 @@ export class AutControllers {
     }
   }
 
+  
+  
+
   static async forgotPassword (req: Request, res: Response){
-    const{email}=req.params
+    const{username}=req.params
     try{
-      const newPassword=await AuthServices.forgotPassword(email)
+      const newPassword=await AuthServices.forgotPassword(username)
       res.status(200).json("You will receive an email to restore your password")
     }
 
@@ -116,16 +99,39 @@ export class AutControllers {
   }
 
   static async restorePassword(req: Request, res: Response){
-const{password,token}=req.body
-try{
+    const{password,token}=req.body
+    try{
+    
+    //validar el password
+    
+      const newPassword=await AuthServices.restorePassword(password,token)
+      res.status(200).json("Your password has been restored")
+    
+    
+    }
+        catch (error) {
+          if (error instanceof CustomError) {
+            return res.status(error.statusCode).json({ error: error.message });
+          }
+          if (error instanceof Error) {
+            return res.status(500).json({ error: error.message });
+          }
+          return res.status(500).json({ error: "Internal server error" });
+        }
+      }
 
-//validar el password
-
-  const newPassword=await AuthServices.restorePassword(password,token)
-  res.status(200).json("Your password has been restored")
 
 
-}
+  static async me(req: Request, res: Response){
+
+    const{user}=req.body
+    try{
+
+      res.status(200).json(user)
+
+
+    }
+
     catch (error) {
       if (error instanceof CustomError) {
         return res.status(error.statusCode).json({ error: error.message });
@@ -135,6 +141,7 @@ try{
       }
       return res.status(500).json({ error: "Internal server error" });
     }
-  }
+  } 
+
 
 }

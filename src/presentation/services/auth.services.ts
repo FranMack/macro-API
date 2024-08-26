@@ -1,37 +1,43 @@
-import { UserModel } from "../../data/Mongo/Models/user.models";
+import { Users } from "../../data/Mongo/Models/user.models";
 import { RegisterUserDto, LoginUserDto } from "../../domain/dto";
 import { bcryptAdapter } from "../../config";
 import { CustomError } from "../../domain/errors/custom.errors";
 import { JWTadapter } from "../../config/jwt.adapter";
 import { EmailService } from "./email.services";
 import { envs } from "../../config";
+import { where } from "sequelize";
 
 export class AuthServices {
+
+
   static async login(userLoginDto: LoginUserDto) {
-    const { email, password } = userLoginDto;
+    const { username, password } = userLoginDto;
 
     try {
-      const userExist = await UserModel.findOne({ email });
+      const userExist = await Users.findOne({ where: { username: username } });
       if (!userExist) {
         throw CustomError.badRequest("Wrong credentials");
       }
 
-      /*if (!userExist.emailValidated) {
-                throw CustomError.badRequest("Su correo no ha sido validado");
-              }*/
+     
+
+     const{id,name,lastname,emailValidated,email,role,}=userExist.dataValues
 
       const validatedPassword = bcryptAdapter.compare(
         password,
-        userExist.password
+        userExist.dataValues.password
       );
       if (!validatedPassword) {
         throw CustomError.badRequest("Wrong credentials");
       }
+      if (!emailValidated) {
+        throw CustomError.badRequest("Su correo no ha sido validado");
+      }
 
       const token = JWTadapter.generateToken({
-        id: userExist.id,
-        email: userExist.email,
-        role:userExist.role[0]
+        id: id,
+        email: email,
+        role:role[0]
       });
 
       if (!token) {
@@ -39,9 +45,10 @@ export class AuthServices {
       }
 
       return {
-        name: userExist.name,
-        lastname: userExist.lastname,
-        email,
+        name: name,
+        lastname: lastname,
+        email:email,
+        username:username,
         token,
       };
     } catch (error) {
@@ -50,22 +57,30 @@ export class AuthServices {
     }
   }
 
+
+  
+
   static async register(userRegisterDto: RegisterUserDto) {
-    const { name, lastname, email, password } = userRegisterDto;
+    const { name, lastname, email,username, password } = userRegisterDto;
 
     try {
-      const userExist = await UserModel.findOne({ email });
+      const emailExist = await Users.findOne({ where: { email: email } });
+      const userExist = await Users.findOne({ where: { username: username } });
 
-      if (userExist) {
+      if (userExist || emailExist) {
         throw new Error("User allready exist");
       }
 
-      const newUser = new UserModel(userRegisterDto);
+      
       const hashedPassword = bcryptAdapter.hash(password);
 
-      newUser.password = hashedPassword;
-
-      await newUser.save();
+      const newUser = await Users.create({
+        name,
+        lastname,
+        email,
+        username,
+        password: hashedPassword,
+      });
 
       //token para validacion de cuenta
       const token = JWTadapter.generateToken({ email });
@@ -81,17 +96,20 @@ export class AuthServices {
             `;
 
       await EmailService.sendEmail({
-        to: newUser.email,
+        to: email,
         subject: "Nueva cuenta",
         htmlBody,
       });
 
-      return { id: newUser.id, email, name, lastname, token };
+      const user = await Users.findOne({ where: { username: username } });
+
+      return { email, name, lastname, token };
     } catch (error) {
       console.log(error);
       throw error;
     }
   }
+
 
   static async validateUser(token: string) {
     try {
@@ -101,25 +119,44 @@ export class AuthServices {
         throw CustomError.badRequest("Invalid token");
       }
 
-      const user = await UserModel.findOne({ email: payload.email });
+      const user = await Users.findOne({where:{ email: payload.email }});
       if (!user) {
         throw CustomError.badRequest("User not found");
       }
 
-      user.emailValidated = true;
 
-      await user.save();
 
-      return user;
+    const [afectedRows,updated] = await Users.update(
+      { emailValidated: true }, // Datos a actualizar
+      { where: { email: payload.email },returning: true, } // Condición de búsqueda
+    );
+    
+
+    if (afectedRows === 0) {
+      throw CustomError.badRequest("User not found or already validated");
+    }
+
+    
+
+
+      return {email:updated[0].dataValues.email,emailValidated:updated[0].dataValues.emailValidated}
     } catch (error) {
       console.log(error);
       throw error;
     }
   }
 
-  static async forgotPassword(email:string){
+
+  static async forgotPassword(username:string){
 
     try{
+      const userExist = await Users.findOne({ where: { username: username } });
+      if (!userExist) {
+        throw CustomError.badRequest("Wrong credentials");
+      }
+
+      const{email}=userExist.dataValues
+
 
 
         //token para validacion de cuenta
@@ -131,7 +168,7 @@ export class AuthServices {
         
             <h1>Restore your password</h1>
             <p>Click the followieng link to </p>
-            <a href="${link}">Change your password: ${email}</a>
+            <a href="${link}">Change your password: ${username}</a>
             
             `;
 
@@ -160,14 +197,19 @@ export class AuthServices {
         if(!email){
             throw CustomError.badRequest("Invalid token")
         }
-        const user =await UserModel.findOne({email})
+        const user =await Users.findOne({where:{email}})
 
         if(!user){
             throw CustomError.badRequest("User not found");
         }
 
-        user.password=bcryptAdapter.hash(password)
-        await user.save()
+        const newPassword=bcryptAdapter.hash(password)
+
+        const [afectedRows,updated] = await Users.update(
+          { password: newPassword }, // Datos a actualizar
+          { where: { email:email },returning: true, } // Condición de búsqueda
+        );
+        
 
         return
 
@@ -180,4 +222,6 @@ export class AuthServices {
       }
 
   }
+
+  
 }

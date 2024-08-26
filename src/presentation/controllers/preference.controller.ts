@@ -1,23 +1,15 @@
 import { Request, Response } from "express";
 import { CustomError } from "../../domain/errors/custom.errors";
-import { ProductServices } from "../services/product.services";
-import { CreateProductDto } from "../../domain/dto";
+import { PreferenceServices } from "../services/preference.services";
 
-export class ProductControllers {
-  static async createProduct(req: Request, res: Response) {
+export class PreferenceControllers {
+  static async preferenceList(req: Request, res: Response) {
+    const { username } = req.params;
+
     try {
+      const preferences = await PreferenceServices.preferenceList(username);
 
-
-      const[error,productDto]=CreateProductDto.create(req.body)
-
-      if(error){
-        throw CustomError.badRequest(error)
-      }
-
-
-      const newProduct = await ProductServices.createProduct(productDto!);
-
-      res.status(200).json(newProduct);
+      res.status(200).json(preferences);
     } catch (error) {
       if (error instanceof CustomError) {
         return res.status(error.statusCode).json({ error: error.message });
@@ -29,14 +21,18 @@ export class ProductControllers {
     }
   }
 
-  static async editProduct(req: Request, res: Response){
-    try{
-      const editedProduct = await ProductServices.editProduct(req.body);
-      res.status(200).json(editedProduct);
-      
-    }
-    
-    catch (error) {
+  static async updatePreference(req: Request, res: Response) {
+    const { username, category, preferences } = req.body;
+
+    try {
+      const updatedPreferences = await PreferenceServices.updatePreference(
+        username,
+        category,
+        preferences
+      );
+
+      res.status(200).json(updatedPreferences);
+    } catch (error) {
       if (error instanceof CustomError) {
         return res.status(error.statusCode).json({ error: error.message });
       }
@@ -47,13 +43,12 @@ export class ProductControllers {
     }
   }
 
-  static async productList (req: Request, res: Response){
-
-  try{
-    const products = await ProductServices.productList()
-    res.status(200).json(products);
-
-  }
+  static async sendNotification(req: Request, res: Response){
+    const{category,subcategory,title,paragraph}=req.body
+    try{
+      const notification= await PreferenceServices.sendNotification(category,subcategory,title,paragraph)
+      res.status(200).json(notification)
+    }
 
     catch (error) {
       if (error instanceof CustomError) {

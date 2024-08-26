@@ -2,21 +2,18 @@ import { regularExps } from "../../config";
 
 export class LoginUserDto {
   constructor(
-    readonly email: string,
+    readonly username: string,
     readonly password: string
   ) {}
 
   static create(object: { [key: string]: string }): [string?, LoginUserDto?] {
-    const { email, password } = object;
+    const { username, password } = object;
 
    
 
-    // Validaciones del email
-    if (!email) {
-      return ["Falta el correo electrónico", undefined];
-    }
-    if (!regularExps.email.test(email)) {
-      return ["El correo electrónico no es válido", undefined];
+    // Validaciones del username
+    if (!username) {
+      return ["Falta el nombre de usario", undefined];
     }
 
     // Validaciones de la contraseña
@@ -25,6 +22,6 @@ export class LoginUserDto {
     }
     
 
-    return [undefined, new LoginUserDto(email, password)];
+    return [undefined, new LoginUserDto(username, password)];
   }
 }

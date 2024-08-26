@@ -11,12 +11,13 @@ export class AuthRoutes{
 
         //definir las rutas de auth
 
-        router.post("/login",AutControllers.login)
         router.post("/register",AutControllers.register)
+        router.post("/login",AutControllers.login)
         router.get("/validate-email/:token",AutControllers.validateUser)
-        router.get("/forgot-password/:email",AutControllers.forgotPassword)
-        router.post("/restore-password",AutControllers.restorePassword)
+        router.get("/forgot-password/:username",AutControllers.forgotPassword)
         router.get("/me",validateAuth,AutControllers.me)
+        router.post("/restore-password",AutControllers.restorePassword)
+        
 
 
         

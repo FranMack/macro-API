@@ -166,9 +166,9 @@ export class AutControllers {
 
   static async editUserInfo(req: Request, res: Response){
     try{
-      const {username,newInfo}=req.body
+      const {user,newInfo}=req.body
 
-      const updatedInfo=await AuthServices.editUserInfo(username,newInfo)
+      const updatedInfo=await AuthServices.editUserInfo(user.username,newInfo)
 
       res.status(200).json(updatedInfo)
 

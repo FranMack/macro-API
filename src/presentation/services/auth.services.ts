@@ -37,7 +37,8 @@ export class AuthServices {
       const token = JWTadapter.generateToken({
         id: id,
         email: email,
-        role:role[0]
+        role:role[0],
+        username,
       });
 
       if (!token) {

@@ -28,7 +28,7 @@ export class AuthServices {
         userExist.dataValues.password
       );
       if (!validatedPassword) {
-        throw CustomError.badRequest("Wrong credentials");
+        throw CustomError.badRequest("Credenciales incorrectas");
       }
       if (!emailValidated) {
         throw CustomError.badRequest("Su correo no ha sido validado");
@@ -61,7 +61,7 @@ export class AuthServices {
   
 
   static async register(userRegisterDto: RegisterUserDto) {
-    const { name, lastname, email,username, password } = userRegisterDto;
+    const { name, lastname, email,username, password,address,phone } = userRegisterDto;
 
     try {
       const emailExist = await Users.findOne({ where: { email: email } });
@@ -79,6 +79,8 @@ export class AuthServices {
         lastname,
         email,
         username,
+        address,
+        phone,
         password: hashedPassword,
       });
 
@@ -220,6 +222,68 @@ export class AuthServices {
         console.log(error);
         throw error;
       }
+
+  }
+
+
+  static async getUserInfo(username:string){
+
+    try{
+      const userInfo=await Users.findOne({ where: { username: username } });
+
+      if(!userInfo){
+        throw CustomError.badRequest("User not found");
+      }
+
+      return [{title:"Email",
+        category:"email",
+          value:userInfo.email
+        },
+        {title:"Telefono",
+          category:"phone",
+          value:userInfo.phone
+        },
+        {title:"Direccion",
+          category:"address",
+          value:userInfo.address
+        }]
+      
+
+
+
+    }
+
+    catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  static async editUserInfo(username:string,newInfo:any){
+
+    try{
+      const userInfo=await Users.findOne({ where: { username: username } });
+      if(!userInfo){
+        throw CustomError.badRequest("User not found");
+      }
+
+      const [afectedRows, updated] = await Users.update(
+        newInfo, // Datos a actualizar
+        { where: { username:username }, returning: true } // Condición de búsqueda
+      );
+
+      const { address,phone,email } =
+          updated[0].dataValues;
+
+        return { address,phone,email };
+
+    }
+
+    catch(error){
+      console.log(error);
+      throw error
+
+    }
 
   }
 

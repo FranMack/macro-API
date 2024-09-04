@@ -17,6 +17,8 @@ export class AuthRoutes{
         router.get("/forgot-password/:username",AutControllers.forgotPassword)
         router.get("/me",validateAuth,AutControllers.me)
         router.post("/restore-password",AutControllers.restorePassword)
+        router.get("/info/:username",validateAuth,AutControllers.getUserInfo)
+        router.post("/info/edit",AutControllers.editUserInfo)
         
 
 

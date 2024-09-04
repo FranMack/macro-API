@@ -143,5 +143,45 @@ export class AutControllers {
     }
   } 
 
+  static async getUserInfo(req: Request, res: Response){
+    try{
 
-}
+      const{username}=req.params;
+
+      const userInfo=await AuthServices.getUserInfo(username);
+      res.status(200).json(userInfo)
+
+    }
+
+    catch (error) {
+      if (error instanceof CustomError) {
+        return res.status(error.statusCode).json({ error: error.message });
+      }
+      if (error instanceof Error) {
+        return res.status(500).json({ error: error.message });
+      }
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  static async editUserInfo(req: Request, res: Response){
+    try{
+      const {username,newInfo}=req.body
+
+      const updatedInfo=await AuthServices.editUserInfo(username,newInfo)
+
+      res.status(200).json(updatedInfo)
+
+    }
+    catch (error) {
+      if (error instanceof CustomError) {
+        return res.status(error.statusCode).json({ error: error.message });
+      }
+      if (error instanceof Error) {
+        return res.status(500).json({ error: error.message });
+      }
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  }
+

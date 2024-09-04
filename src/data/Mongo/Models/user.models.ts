@@ -18,7 +18,10 @@ class Users extends Model {
   public username!: string;
   public emailValidated!: boolean;
   public password!: string;
+  public phone!: string;
+  public address!: string;
   public role!: string[];
+
 }
 
 Users.init(
@@ -43,6 +46,22 @@ Users.init(
       validate: {
         notNull: { msg: "Lastname is required" },
         notEmpty: { msg: "Lastname cannot be empty" },
+      },
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: "Phone numbers is required" },
+        notEmpty: { msg: "Phone numbers cannot be empty" },
+      },
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: "Addres is required" },
+        notEmpty: { msg: "Addres cannot be empty" },
       },
     },
     email: {

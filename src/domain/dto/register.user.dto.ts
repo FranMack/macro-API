@@ -6,11 +6,13 @@ export class RegisterUserDto {
     readonly lastname: string,
     readonly email: string,
     readonly username: string,
-    readonly password: string
+    readonly password: string,
+    readonly phone: string,
+    readonly address: string,
   ) {}
 
   static create(object: { [key: string]: string }): [string?, RegisterUserDto?] {
-    const { name, lastname, email, password,username } = object;
+    const { name, lastname, email, password,username,phone,address } = object;
 
     // Validaciones del nombre
     if (!name) {
@@ -42,6 +44,17 @@ export class RegisterUserDto {
     if (!username) {
       return ["Falta el nombre de usuario", undefined];
     }
+
+    // Validaciones del telefono
+    if (!phone) {
+      return ["Falta el número telefonico de usuario", undefined];
+    }
+   
+    // Validaciones del dirección
+    if (!address) {
+      return ["Falta el número telefonico de usuario", undefined];
+    }
+   
    
 
     // Validaciones de la contraseña
@@ -73,6 +86,6 @@ export class RegisterUserDto {
       return ["La contraseña es demasiado corta", undefined];
     }
 
-    return [undefined, new RegisterUserDto(name,lastname, email,username, password)];
+    return [undefined, new RegisterUserDto(name,lastname, email,username, password,phone,address)];
   }
 }

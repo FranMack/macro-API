@@ -136,6 +136,8 @@ export class PreferenceServices {
       }
 
 
+
+
       const models:CategoryModels  = {
         ahorrosYbeneficios: AhorrosYbeneficios,
         ofertasYseguros: OfertasYseguros,
@@ -172,6 +174,9 @@ export class PreferenceServices {
       throw error;
     }
   }
+
+
+
 
   static async sendNotification(
     category: keyof CategoryModels,

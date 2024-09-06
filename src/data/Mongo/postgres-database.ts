@@ -7,7 +7,7 @@ import { envs } from "../../config";
 //   logging: false,
 // });
 
-const db = new Sequelize(envs.DATABASE_URL!, {
+export const db = new Sequelize(envs.DATABASE_URL!, {
   dialect: "postgres",
   protocol: "postgres",
   dialectOptions: {

@@ -43,14 +43,17 @@ export class PreferenceControllers {
     }
   }
 
-  static async sendNotification(req: Request, res: Response){
-    const{category,subcategory,title,paragraph}=req.body
-    try{
-      const notification= await PreferenceServices.sendNotification(category,subcategory,title,paragraph)
-      res.status(200).json(notification)
-    }
-
-    catch (error) {
+  static async sendNotification(req: Request, res: Response) {
+    const { category, subcategory, title, paragraph } = req.body;
+    try {
+      const notification = await PreferenceServices.sendNotification(
+        category,
+        subcategory,
+        title,
+        paragraph
+      );
+      res.status(200).json(notification);
+    } catch (error) {
       if (error instanceof CustomError) {
         return res.status(error.statusCode).json({ error: error.message });
       }

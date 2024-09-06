@@ -1,9 +1,20 @@
-import {Sequelize} from "sequelize"
+import { Sequelize } from "sequelize";
 
-export const db = new Sequelize("macro", "", "", {
-  host: "localhost",
+import { envs } from "../../config";
+// export const db = new Sequelize("macro", "", "", {
+//   host: "localhost",
+//   dialect: "postgres",
+//   logging: false,
+// });
+
+const db = new Sequelize(envs.DATABASE_URL!, {
   dialect: "postgres",
-  logging: false,
+  protocol: "postgres",
+  dialectOptions: {
+    ssl: {
+      require: true, // Asegura que se utilice SSL para la conexión
+      rejectUnauthorized: false, // Esto se debe incluir para evitar problemas con certificados en Heroku
+    },
+  },
+  logging: false, // Opcional, desactiva el logging de Sequelize
 });
-
-

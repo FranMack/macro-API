@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize";
 
 import { envs } from "../../config";
-// export const db = new Sequelize("macro", "", "", {
-//   host: "localhost",
-//   dialect: "postgres",
-//   logging: false,
-// });
+/*export const db = new Sequelize("macro", "", "", {
+  host: "localhost",
+  dialect: "postgres",
+  logging: false,
+});*/
 
 export const db = new Sequelize(envs.DATABASE_URL!, {
   dialect: "postgres",

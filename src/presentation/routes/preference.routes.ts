@@ -11,8 +11,9 @@ export class PreferenceRoutes{
 
         //definir las rutas de auth
 
-        router.get("/list/:username",PreferenceControllers.preferenceList)
-        router.patch("/update",PreferenceControllers.updatePreference)
+        router.get("/list/:username",validateAuth,PreferenceControllers.preferenceList)
+        router.patch("/update",validateAuth,PreferenceControllers.updatePreference)
+        router.post("/send-client-data",validateAuth,PreferenceControllers.sendUserDataByEmail)
         router.post("/notifications",PreferenceControllers.sendNotification)
     
         
